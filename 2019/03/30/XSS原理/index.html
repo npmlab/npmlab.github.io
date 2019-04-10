@@ -5,12 +5,14 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
     <meta name="viewport" content="width=device-width, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>归档</title>
+    <title>XSS原理 - Hexo</title>
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="google" content="notranslate">
     <meta name="keywords" content="npmlab,"> 
-    
+    <meta name="description" content="##什么是XSS？
+其实XSS就是html代码注入，（又是注入）注入的本质就是使用交互的窗口进行语句的拼接。sql注入是进行sql语句的拼接，而XSS是进行网页的html代码的拼接。
+XSS能做什么,"> 
     <meta name="author" content="John Doe"> 
     <link rel="alternative" href="atom.xml" title="Hexo" type="application/atom+xml"> 
     <link rel="icon" href="/img/favicon.png"> 
@@ -30,56 +32,80 @@
 <body class="loading">
     <span id="config-title" style="display:none">Hexo</span>
     <div id="loader"></div>
-    <div id="single" class="page">
-    <div id="top">
-        <a class="icon-left image-icon" href="javascript:history.back()"></a>
-    </div>
-    <div class="section">
-        <div class="article">
-            <div class="main">
-                <div class="content">
-                    <div class="timeline">
-                      <h2 class="timeline-title">归档: 5篇</h2>
-                      
-                        
-                          <h3 class="timeline-subtitle">2019</h3>
-                        
-                        <div class="timeline-item">
-                          <time>2019-03-30</time>
-                          <a target="_self" href="/2019/03/30/XSS原理/">XSS原理</a>
-                        </div>
-                      
-                        
-                        <div class="timeline-item">
-                          <time>2019-03-30</time>
-                          <a target="_self" href="/2019/03/30/sql注入/">sql注入</a>
-                        </div>
-                      
-                        
-                        <div class="timeline-item">
-                          <time>2019-03-30</time>
-                          <a target="_self" href="/2019/03/30/sql注入2/">sql注入</a>
-                        </div>
-                      
-                        
-                        <div class="timeline-item">
-                          <time>2019-03-30</time>
-                          <a target="_self" href="/2019/03/30/偏移注入/">偏移注入</a>
-                        </div>
-                      
-                        
-                        <div class="timeline-item">
-                          <time>2019-03-30</time>
-                          <a target="_self" href="/2019/03/30/正则表达式/">正则表达式</a>
-                        </div>
-                      
-                    </div>
-                </div>
+    <div id="single">
+    <div id="top" style="display: block;">
+    <div class="bar" style="width: 0;"></div>
+    <a class="icon-home image-icon" href="javascript:;" data-url="http://yoursite.com"></a>
+    <div title="播放/暂停" class="icon-play"></div>
+    <h3 class="subtitle">XSS原理</h3>
+    <div class="social">
+        <!--<div class="like-icon">-->
+            <!--<a href="javascript:;" class="likeThis active"><span class="icon-like"></span><span class="count">76</span></a>-->
+        <!--</div>-->
+        <div>
+            <div class="share">
+                <a title="获取二维码" class="icon-scan" href="javascript:;"></a>
             </div>
+            <div id="qr"></div>
         </div>
     </div>
+    <div class="scrollbar"></div>
 </div>
 
+    <div class="section">
+        <div class="article">
+    <div class="main">
+        <h1 class="title">XSS原理</h1>
+        <div class="stuff">
+            <span>三月 30, 2019</span>
+            
+
+        </div>
+        <div class="content markdown">
+            <p>##什么是XSS？</p>
+<p>其实XSS就是html代码注入，（又是注入）注入的本质就是使用交互的窗口进行语句的拼接。sql注入是进行sql语句的拼接，而XSS是进行网页的html代码的拼接。</p>
+<p>XSS能做什么？</p>
+<blockquote>
+<p>盗取cookie</p>
+<p>获取内网ip</p>
+<p>获取浏览器保存的明文密码</p>
+<p>截取网页屏幕</p>
+<p>还有你的键盘记录</p>
+</blockquote>
+<p>##XSS有哪些类型？</p>
+<ul>
+<li>反射型XSS<br>又称为非持久性跨站点脚本攻击，它是最常见的类型的XSS。漏洞产生的原因是攻击者注入的数据反映在响应中。一个典型的非持久性XSS包含一个带XSS攻击向量的链接(即每次攻击需要用户的点击)。</li>
+<li>储存型XSS<br>又称为持久型跨站点脚本，它一般发生在XSS攻击向量(一般指XSS攻击代码)存储在网站数据库，当一个页面被用户打开的时候执行。每当用户打开浏览器,脚本执行。持久的XSS相比非持久性XSS攻击危害性更大,因为每当用户打开页面，查看内容时脚本将自动执行。谷歌的orkut曾经就遭受到XSS。</li>
+<li><p>DOM型XSS<br>基于DOM的XSS有时也称为type0XSS。当用户能够通过交互修改浏览器页面中的DOM(DocumentObjectModel)并显示在浏览器上时，就有可能产生这种漏洞，从效果上来说它也是反射型XSS。<br>怎么检测和证明XSS？<br>想办法让浏览器弹窗，基本上有弹窗就是证明有XSS。</p>
+<p>  XSSS真的执行的恶意代码的实际上是JS语句，那么我们一般需要构建<script></script>（这个是script的标签）</p>
+</li>
+</ul>
+
+            <!--[if lt IE 9]><script>document.createElement('audio');</script><![endif]-->
+            <audio id="audio" loop="1" preload="auto" controls="controls" data-autoplay="false">
+                <source type="audio/mpeg" src>
+            </audio>
+            
+                <ul id="audio-list" style="display:none">
+                    
+                        <li title="0" data-url="http://link.hhtjim.com/163/5146554.mp3"></li>
+                    
+                        <li title="1" data-url="http://link.hhtjim.com/qq/001faIUs4M2zna.mp3"></li>
+                    
+                </ul>
+            
+        </div>
+        
+    <div id="gitalk-container" class="comment link" data-ae="false" data-ci data-cs data-r data-o data-a="npmlab" data-d="false">查看评论</div>
+
+
+    </div>
+    
+</div>
+
+
+    </div>
+</div>
 </body>
 <script src="//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js"></script>
 <script src="//lib.baomitu.com/jquery/1.8.3/jquery.min.js"></script>

