@@ -5,12 +5,12 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
     <meta name="viewport" content="width=device-width, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>归档: 2019/3</title>
+    <title>CSRF原理 - Hexo</title>
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="google" content="notranslate">
     <meta name="keywords" content="npmlab,"> 
-    
+    <meta name="description" content="###什么是CSRFCSRF（Cross-site request forgery）跨站请求伪造，也被称为“One Click Attack”或者Session Riding，通常缩写为CSRF或者,"> 
     <meta name="author" content="John Doe"> 
     <link rel="alternative" href="atom.xml" title="Hexo" type="application/atom+xml"> 
     <link rel="icon" href="/img/favicon.png"> 
@@ -30,62 +30,66 @@
 <body class="loading">
     <span id="config-title" style="display:none">Hexo</span>
     <div id="loader"></div>
-    <div id="single" class="page">
-    <div id="top">
-        <a class="icon-left image-icon" href="javascript:history.back()"></a>
-    </div>
-    <div class="section">
-        <div class="article">
-            <div class="main">
-                <div class="content">
-                    <div class="timeline">
-                      <h2 class="timeline-title">归档: 6篇</h2>
-                      
-                        
-                          <h3 class="timeline-subtitle">2019</h3>
-                        
-                        <div class="timeline-item">
-                          <time>2019-03-30</time>
-                          <a target="_self" href="/2019/03/30/CSRF/">CSRF原理</a>
-                        </div>
-                      
-                        
-                        <div class="timeline-item">
-                          <time>2019-03-30</time>
-                          <a target="_self" href="/2019/03/30/XSS原理/">XSS原理</a>
-                        </div>
-                      
-                        
-                        <div class="timeline-item">
-                          <time>2019-03-30</time>
-                          <a target="_self" href="/2019/03/30/sql注入/">sql注入</a>
-                        </div>
-                      
-                        
-                        <div class="timeline-item">
-                          <time>2019-03-30</time>
-                          <a target="_self" href="/2019/03/30/正则表达式/">正则表达式</a>
-                        </div>
-                      
-                        
-                        <div class="timeline-item">
-                          <time>2019-03-30</time>
-                          <a target="_self" href="/2019/03/30/sql注入2/">sql注入</a>
-                        </div>
-                      
-                        
-                        <div class="timeline-item">
-                          <time>2019-03-30</time>
-                          <a target="_self" href="/2019/03/30/偏移注入/">偏移注入</a>
-                        </div>
-                      
-                    </div>
-                </div>
+    <div id="single">
+    <div id="top" style="display: block;">
+    <div class="bar" style="width: 0;"></div>
+    <a class="icon-home image-icon" href="javascript:;" data-url="http://yoursite.com"></a>
+    <div title="播放/暂停" class="icon-play"></div>
+    <h3 class="subtitle">CSRF原理</h3>
+    <div class="social">
+        <!--<div class="like-icon">-->
+            <!--<a href="javascript:;" class="likeThis active"><span class="icon-like"></span><span class="count">76</span></a>-->
+        <!--</div>-->
+        <div>
+            <div class="share">
+                <a title="获取二维码" class="icon-scan" href="javascript:;"></a>
             </div>
+            <div id="qr"></div>
         </div>
     </div>
+    <div class="scrollbar"></div>
 </div>
 
+    <div class="section">
+        <div class="article">
+    <div class="main">
+        <h1 class="title">CSRF原理</h1>
+        <div class="stuff">
+            <span>三月 30, 2019</span>
+            
+
+        </div>
+        <div class="content markdown">
+            <p>###什么是CSRF<br>CSRF（Cross-site request forgery）跨站请求伪造，也被称为“One Click Attack”或者Session Riding，通常缩写为CSRF或者XSRF，是一种对网站的恶意利用。尽管听起来像跨站脚本（XSS），但它与XSS非常不同，XSS利用站点内的信任用户，而CSRF则通过伪装成受信任用户的请求来利用受信任的网站。与XSS攻击相比，CSRF攻击往往不大流行（因此对其进行防范的资源也相当稀少）和难以防范，所以被认为比XSS更具危险性。</p>
+<p>其实说白了，csrf漏洞的成因就是网站的cookie在浏览器中不会过期，只要不关闭浏览器或者退出登录，那以后只要是访问这个网站，都会默认你已经登录状态，而在这个期间，攻击者发送了构造好的CSRF脚本或者包含CSRF脚本的链接，可能会执行一些用户不想做的功能（比如添加账号等）。</p>
+<p>###总结<br>1.诱骗管理员点击我们构造好的payload进行CSRF攻击<br>2.利用管理员的身份在其根目录下生成一个一句话木马文件<br>3.使用才菜刀连接这个文件时，就不在需要管理员cookie验证。成功拿到webshell。</p>
+<p>###如何预防CSRF攻击<br>可以使用验证码（强制用户必须和应用进行交互，但是肯定降低用户体验效果）<br>最好的方法是在请求中加入随机token值(不同表单包含一个不同的伪随机值)，进行验证。</p>
+
+            <!--[if lt IE 9]><script>document.createElement('audio');</script><![endif]-->
+            <audio id="audio" loop="1" preload="auto" controls="controls" data-autoplay="false">
+                <source type="audio/mpeg" src>
+            </audio>
+            
+                <ul id="audio-list" style="display:none">
+                    
+                        <li title="0" data-url="http://link.hhtjim.com/163/5146554.mp3"></li>
+                    
+                        <li title="1" data-url="http://link.hhtjim.com/qq/001faIUs4M2zna.mp3"></li>
+                    
+                </ul>
+            
+        </div>
+        
+    <div id="gitalk-container" class="comment link" data-ae="false" data-ci data-cs data-r data-o data-a="npmlab" data-d="false">查看评论</div>
+
+
+    </div>
+    
+</div>
+
+
+    </div>
+</div>
 </body>
 <script src="//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js"></script>
 <script src="//lib.baomitu.com/jquery/1.8.3/jquery.min.js"></script>
