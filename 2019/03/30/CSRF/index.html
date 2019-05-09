@@ -10,7 +10,7 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="google" content="notranslate">
     <meta name="keywords" content="npmlab,"> 
-    <meta name="description" content="###什么是CSRFCSRF（Cross-site request forgery）跨站请求伪造，也被称为“One Click Attack”或者Session Riding，通常缩写为CSRF或者,"> 
+    <meta name="description" content="什么是CSRFCSRF（Cross-site request forgery）跨站请求伪造，也被称为“One Click Attack”或者Session Riding，通常缩写为CSRF或者XSR,"> 
     <meta name="author" content="John Doe"> 
     <link rel="alternative" href="atom.xml" title="Hexo" type="application/atom+xml"> 
     <link rel="icon" href="/img/favicon.png"> 
@@ -60,10 +60,10 @@
 
         </div>
         <div class="content markdown">
-            <p>###什么是CSRF<br>CSRF（Cross-site request forgery）跨站请求伪造，也被称为“One Click Attack”或者Session Riding，通常缩写为CSRF或者XSRF，是一种对网站的恶意利用。尽管听起来像跨站脚本（XSS），但它与XSS非常不同，XSS利用站点内的信任用户，而CSRF则通过伪装成受信任用户的请求来利用受信任的网站。与XSS攻击相比，CSRF攻击往往不大流行（因此对其进行防范的资源也相当稀少）和难以防范，所以被认为比XSS更具危险性。</p>
+            <h3 id="什么是CSRF"><a href="#什么是CSRF" class="headerlink" title="什么是CSRF"></a>什么是CSRF</h3><p>CSRF（Cross-site request forgery）跨站请求伪造，也被称为“One Click Attack”或者Session Riding，通常缩写为CSRF或者XSRF，是一种对网站的恶意利用。尽管听起来像跨站脚本（XSS），但它与XSS非常不同，XSS利用站点内的信任用户，而CSRF则通过伪装成受信任用户的请求来利用受信任的网站。与XSS攻击相比，CSRF攻击往往不大流行（因此对其进行防范的资源也相当稀少）和难以防范，所以被认为比XSS更具危险性。</p>
 <p>其实说白了，csrf漏洞的成因就是网站的cookie在浏览器中不会过期，只要不关闭浏览器或者退出登录，那以后只要是访问这个网站，都会默认你已经登录状态，而在这个期间，攻击者发送了构造好的CSRF脚本或者包含CSRF脚本的链接，可能会执行一些用户不想做的功能（比如添加账号等）。</p>
-<p>###总结<br>1.诱骗管理员点击我们构造好的payload进行CSRF攻击<br>2.利用管理员的身份在其根目录下生成一个一句话木马文件<br>3.使用才菜刀连接这个文件时，就不在需要管理员cookie验证。成功拿到webshell。</p>
-<p>###如何预防CSRF攻击<br>可以使用验证码（强制用户必须和应用进行交互，但是肯定降低用户体验效果）<br>最好的方法是在请求中加入随机token值(不同表单包含一个不同的伪随机值)，进行验证。</p>
+<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><p>1.诱骗管理员点击我们构造好的payload进行CSRF攻击<br>2.利用管理员的身份在其根目录下生成一个一句话木马文件<br>3.使用才菜刀连接这个文件时，就不在需要管理员cookie验证。成功拿到webshell。</p>
+<h3 id="如何预防CSRF攻击"><a href="#如何预防CSRF攻击" class="headerlink" title="如何预防CSRF攻击"></a>如何预防CSRF攻击</h3><p>可以使用验证码（强制用户必须和应用进行交互，但是肯定降低用户体验效果）<br>最好的方法是在请求中加入随机token值(不同表单包含一个不同的伪随机值)，进行验证。</p>
 
             <!--[if lt IE 9]><script>document.createElement('audio');</script><![endif]-->
             <audio id="audio" loop="1" preload="auto" controls="controls" data-autoplay="false">

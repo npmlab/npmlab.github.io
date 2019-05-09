@@ -89,8 +89,7 @@ sql盲注介绍
 <p>时间盲注<br>主要通过sleep函数进行注入：</p>
 <pre><code>?id=1&apos;and if(ascii(substr(databse(),1,1))=115,sleep(5),1)#
 </code></pre><p>通过if判断执行sql语句，如果条件为真就执行sleep 停5秒再返回，如果为假就执行1即立即返回页面</p>
-<p>##post注入</p>
-<p>post注入的介绍</p>
+<h2 id="post注入"><a href="#post注入" class="headerlink" title="post注入"></a>post注入</h2><p>post注入的介绍</p>
 <p>post注入也是sql注入的一种类型，通过post进行传参的注入，post传参一般是通过表单的方式提交，但本质上和get注入没有多大的区别。通过伪造插入修改语句，使得用户插入的数据也被当成sql代码去执行。</p>
 <p><em>post注入的高危点</em></p>
 <blockquote>

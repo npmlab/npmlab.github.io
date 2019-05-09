@@ -10,9 +10,10 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="google" content="notranslate">
     <meta name="keywords" content="npmlab,"> 
-    <meta name="description" content="##什么是XSS？
-其实XSS就是html代码注入，（又是注入）注入的本质就是使用交互的窗口进行语句的拼接。sql注入是进行sql语句的拼接，而XSS是进行网页的html代码的拼接。
-XSS能做什么,"> 
+    <meta name="description" content="什么是XSS？其实XSS就是html代码注入，（又是注入）注入的本质就是使用交互的窗口进行语句的拼接。sql注入是进行sql语句的拼接，而XSS是进行网页的html代码的拼接。
+XSS能做什么？
+
+,"> 
     <meta name="author" content="John Doe"> 
     <link rel="alternative" href="atom.xml" title="Hexo" type="application/atom+xml"> 
     <link rel="icon" href="/img/favicon.png"> 
@@ -62,8 +63,7 @@ XSS能做什么,">
 
         </div>
         <div class="content markdown">
-            <p>##什么是XSS？</p>
-<p>其实XSS就是html代码注入，（又是注入）注入的本质就是使用交互的窗口进行语句的拼接。sql注入是进行sql语句的拼接，而XSS是进行网页的html代码的拼接。</p>
+            <h2 id="什么是XSS？"><a href="#什么是XSS？" class="headerlink" title="什么是XSS？"></a>什么是XSS？</h2><p>其实XSS就是html代码注入，（又是注入）注入的本质就是使用交互的窗口进行语句的拼接。sql注入是进行sql语句的拼接，而XSS是进行网页的html代码的拼接。</p>
 <p>XSS能做什么？</p>
 <blockquote>
 <p>盗取cookie</p>
@@ -72,23 +72,19 @@ XSS能做什么,">
 <p>截取网页屏幕</p>
 <p>还有你的键盘记录</p>
 </blockquote>
-<p>##XSS有哪些类型？</p>
-<ul>
+<h2 id="XSS有哪些类型？"><a href="#XSS有哪些类型？" class="headerlink" title="XSS有哪些类型？"></a>XSS有哪些类型？</h2><ul>
 <li>反射型XSS<br>又称为非持久性跨站点脚本攻击，它是最常见的类型的XSS。漏洞产生的原因是攻击者注入的数据反映在响应中。一个典型的非持久性XSS包含一个带XSS攻击向量的链接(即每次攻击需要用户的点击)。</li>
 <li>储存型XSS<br>又称为持久型跨站点脚本，它一般发生在XSS攻击向量(一般指XSS攻击代码)存储在网站数据库，当一个页面被用户打开的时候执行。每当用户打开浏览器,脚本执行。持久的XSS相比非持久性XSS攻击危害性更大,因为每当用户打开页面，查看内容时脚本将自动执行。谷歌的orkut曾经就遭受到XSS。</li>
 <li>DOM型XSS<br>基于DOM的XSS有时也称为type0XSS。当用户能够通过交互修改浏览器页面中的DOM(DocumentObjectModel)并显示在浏览器上时，就有可能产生这种漏洞，从效果上来说它也是反射型XSS。<br>怎么检测和证明XSS？<br>想办法让浏览器弹窗，基本上有弹窗就是证明有XSS。</li>
 </ul>
 <p>XSSS真的执行的恶意代码的实际上是JS语句，<script></script>（这个是script的标签）</p>
-<p>###反射型XSS<br>反射型XSS只是简单的把用户输入的数据“反射”给浏览器。也就是说，黑客往往需要诱使用户“点击”一个恶意链接，才能攻击成功，反射型XSS也叫作“非持久型XSS”，只对用户的本次访问有效，xss真的执行的恶意代码实际上是JS语句。我们一般使用，判断是否弹窗，来确定是否存在xss漏洞。</p>
-<p>####伪协议<br>javascript:alert(1)(经典代码点这里)，这里的javascript实际上是一个伪协议，不同于因特网上的真实存在的协议，如https://,ftp://等。伪协议只有关联应用能使用，比如：php:// tencent://(关联QQ)，而javascript伪协议实际上是声明了URL的主体是任意的javascript代码，javascript:alert(1)</p>
-<p>####反射型XSS常见注入点<br>网站的搜索栏、用户登录入口、输入表单等地方，常用来窃取客户端cookies或钓鱼欺骗。</p>
-<p>###实战靶场<br>我这里使用本地搭建，方便分析代码。</p>
-<p>####level1</p>
-<p>可以看到，并没有对任何过滤，直接如下</p>
-<p>####level2</p>
-<p>分析代码，仍然是使用get方法，从url中接受一个keyword参数，不过这里用到一个过滤函数htmlspecialchars().<br>定义和用法<br>htmlspecialchars() 函数把预定义的字符转换为 HTML 实体。等于不能使用&lt;&gt;<br>第一种做法：将input的文本框本分提前闭合，不影响我们弹框代码<br>    “&gt;<script>alert(xinn)</script><br>第二种做法：使标签和引号闭合就可以了，使用onlick点击事件，这样需要点击一下输入框</p>
-<p>####level3</p>
-<p>析代码发现跟上面大同小异，不过过滤更加严格了，特别是value=’”.htmlspecialchars($str).”‘发现<br>上题尝试闭合&lt;””&gt;构造弹窗方法失效了，应为value中的&lt;被转义了，只能利用上题中的js时间来构造弹窗，不过这里需要用单引号闭合，构造payload : ‘ onmouseover=alert(1)//<br>这样的话： &lt;input name=keyword value=’ ‘ onmouseover=alert(1)// ‘&gt;</p>
+<h3 id="反射型XSS"><a href="#反射型XSS" class="headerlink" title="反射型XSS"></a>反射型XSS</h3><p>反射型XSS只是简单的把用户输入的数据“反射”给浏览器。也就是说，黑客往往需要诱使用户“点击”一个恶意链接，才能攻击成功，反射型XSS也叫作“非持久型XSS”，只对用户的本次访问有效，xss真的执行的恶意代码实际上是JS语句。我们一般使用，判断是否弹窗，来确定是否存在xss漏洞。</p>
+<h4 id="伪协议"><a href="#伪协议" class="headerlink" title="伪协议"></a>伪协议</h4><p>javascript:alert(1)(经典代码点这里)，这里的javascript实际上是一个伪协议，不同于因特网上的真实存在的协议，如https://,ftp://等。伪协议只有关联应用能使用，比如：php:// tencent://(关联QQ)，而javascript伪协议实际上是声明了URL的主体是任意的javascript代码，javascript:alert(1)</p>
+<h4 id="反射型XSS常见注入点"><a href="#反射型XSS常见注入点" class="headerlink" title="反射型XSS常见注入点"></a>反射型XSS常见注入点</h4><p>网站的搜索栏、用户登录入口、输入表单等地方，常用来窃取客户端cookies或钓鱼欺骗。</p>
+<h3 id="实战靶场"><a href="#实战靶场" class="headerlink" title="实战靶场"></a>实战靶场</h3><p>我这里使用本地搭建，方便分析代码。</p>
+<h4 id="level1"><a href="#level1" class="headerlink" title="level1"></a>level1</h4><p>可以看到，并没有对任何过滤，直接如下</p>
+<h4 id="level2"><a href="#level2" class="headerlink" title="level2"></a>level2</h4><p>分析代码，仍然是使用get方法，从url中接受一个keyword参数，不过这里用到一个过滤函数htmlspecialchars().<br>定义和用法<br>htmlspecialchars() 函数把预定义的字符转换为 HTML 实体。等于不能使用&lt;&gt;<br>第一种做法：将input的文本框本分提前闭合，不影响我们弹框代码<br>    “&gt;<script>alert(xinn)</script><br>第二种做法：使标签和引号闭合就可以了，使用onlick点击事件，这样需要点击一下输入框</p>
+<h4 id="level3"><a href="#level3" class="headerlink" title="level3"></a>level3</h4><p>析代码发现跟上面大同小异，不过过滤更加严格了，特别是value=’”.htmlspecialchars($str).”‘发现<br>上题尝试闭合&lt;””&gt;构造弹窗方法失效了，应为value中的&lt;被转义了，只能利用上题中的js时间来构造弹窗，不过这里需要用单引号闭合，构造payload : ‘ onmouseover=alert(1)//<br>这样的话： &lt;input name=keyword value=’ ‘ onmouseover=alert(1)// ‘&gt;</p>
 <p>还有一种方法还是与上面一样,使用 ‘ onlick=alert(1)//,不过同样需要再点击一次</p>
 <p>这靶场总共20题，这里就不一一例举了，之后有时间会出一篇整套靶场的解题过程。</p>
 <h2 id="接下来我们讲一讲储存型XSS"><a href="#接下来我们讲一讲储存型XSS" class="headerlink" title="接下来我们讲一讲储存型XSS"></a>接下来我们讲一讲储存型XSS</h2><p><a href="http://117.41.229.122:8082/" title="靶场地址" target="_blank" rel="noopener">http://117.41.229.122:8082/</a><br>首先可以看到是fineCMS的站</p>
@@ -97,7 +93,7 @@ XSS能做什么,">
 <p>插入成功，回到xss平台即可获取访问者的cookie</p>
 <p>静静的等待管理员的上钩。</p>
 <h2 id="接下来就是DOM型XSS"><a href="#接下来就是DOM型XSS" class="headerlink" title="接下来就是DOM型XSS"></a>接下来就是DOM型XSS</h2><p>DOM——based XSS漏洞是基于文档对象模型Document Object Model的一种漏洞。DOM是一个与平台，编程语言无关的接口，它允许程序或脚本动态的访问和更新文档内容，结构，样式，处理后的结果你能成为显示页面的一部分。DOM中有很多对象，其中一些事用户可操作的，如uRL，location，refelTer等，客户端的脚本程序可以通过DOM动态的检查和修改页面内容，它不依赖于提交数据到服务器端，而从客户端获得DOM中的数据在本地执行，如果DOM中的数据没有经过严格的确认，就会产生DOM——based XSS漏洞。<br>DOM就是个树状的模型，你可以编写js代码根据DOM一层一层的节点，去遍历/获取/修改对应的节点，对象，值。与反射型XSS、存储型XSS的区别就在于xss代码并不需要服务器解析响应的直接参与，触发XSS靠的是浏览器端的DOM解析。<br>实际上，这种类型的xss并非按照“数据是否保存在服务器端”来划分，DOM型从效果上来说也是反射型XSS。所以通过修改页面的DOM节点形成的XSS，称之为DOM型XSS。以下是一张DOM图</p>
-<p>###实战靶场<br>访问靶场，在URL上进行传参</p>
+<h3 id="实战靶场-1"><a href="#实战靶场-1" class="headerlink" title="实战靶场"></a>实战靶场</h3><p>访问靶场，在URL上进行传参</p>
 <p>发现输入字符和尖括号都回显在页面上</p>
 <p>可以看到，它过滤掉了很多javascript事件名，比如onclick，onchange等，但并没过滤onerror事件。</p>
 <p>然后我们分析一下源码</p>
