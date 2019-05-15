@@ -5,12 +5,13 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
     <meta name="viewport" content="width=device-width, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>归档: 2019/3</title>
+    <title>sql注入原理分析 - Hexo</title>
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="google" content="notranslate">
     <meta name="keywords" content="npmlab,"> 
-    
+    <meta name="description" content="SQL Injection：就是通过把SQL命令插入到Web表单递交或输入域名或页面请求的查询字符串，最终达到欺骗服务器执行恶意的SQL命令。
+具体来说，它是利用现有应用程序，将（恶意）的SQL命令,"> 
     <meta name="author" content="John Doe"> 
     <link rel="alternative" href="atom.xml" title="Hexo" type="application/atom+xml"> 
     <link rel="icon" href="/img/favicon.png"> 
@@ -30,86 +31,74 @@
 <body class="loading">
     <span id="config-title" style="display:none">Hexo</span>
     <div id="loader"></div>
-    <div id="single" class="page">
-    <div id="top">
-        <a class="icon-left image-icon" href="javascript:history.back()"></a>
-    </div>
-    <div class="section">
-        <div class="article">
-            <div class="main">
-                <div class="content">
-                    <div class="timeline">
-                      <h2 class="timeline-title">归档: 11篇</h2>
-                      
-                        
-                          <h3 class="timeline-subtitle">2019</h3>
-                        
-                        <div class="timeline-item">
-                          <time>2019-03-30</time>
-                          <a target="_self" href="/2019/03/30/XSS原理/">XSS原理</a>
-                        </div>
-                      
-                        
-                        <div class="timeline-item">
-                          <time>2019-03-30</time>
-                          <a target="_self" href="/2019/03/30/MSSQL/">MSSQL-反弹注入</a>
-                        </div>
-                      
-                        
-                        <div class="timeline-item">
-                          <time>2019-03-30</time>
-                          <a target="_self" href="/2019/03/30/Oracle注入/">Oracle原理</a>
-                        </div>
-                      
-                        
-                        <div class="timeline-item">
-                          <time>2019-03-30</time>
-                          <a target="_self" href="/2019/03/30/SQL-DNS注入/">SQL-DNS注入</a>
-                        </div>
-                      
-                        
-                        <div class="timeline-item">
-                          <time>2019-03-30</time>
-                          <a target="_self" href="/2019/03/30/sql注入/">sql注入1</a>
-                        </div>
-                      
-                        
-                        <div class="timeline-item">
-                          <time>2019-03-30</time>
-                          <a target="_self" href="/2019/03/30/CSRF/">CSRF原理</a>
-                        </div>
-                      
-                        
-                        <div class="timeline-item">
-                          <time>2019-03-30</time>
-                          <a target="_self" href="/2019/03/30/sql注入原理分析/">sql注入原理分析</a>
-                        </div>
-                      
-                        
-                        <div class="timeline-item">
-                          <time>2019-03-30</time>
-                          <a target="_self" href="/2019/03/30/sql注入2/">sql注入2</a>
-                        </div>
-                      
-                        
-                        <div class="timeline-item">
-                          <time>2019-03-30</time>
-                          <a target="_self" href="/2019/03/30/宽字节注入/">MSSQL-反弹注入</a>
-                        </div>
-                      
-                        
-                        <div class="timeline-item">
-                          <time>2019-03-30</time>
-                          <a target="_self" href="/2019/03/30/偏移注入/">偏移注入</a>
-                        </div>
-                      
-                    </div>
-                </div>
+    <div id="single">
+    <div id="top" style="display: block;">
+    <div class="bar" style="width: 0;"></div>
+    <a class="icon-home image-icon" href="javascript:;" data-url="http://yoursite.com"></a>
+    <div title="播放/暂停" class="icon-play"></div>
+    <h3 class="subtitle">sql注入原理分析</h3>
+    <div class="social">
+        <!--<div class="like-icon">-->
+            <!--<a href="javascript:;" class="likeThis active"><span class="icon-like"></span><span class="count">76</span></a>-->
+        <!--</div>-->
+        <div>
+            <div class="share">
+                <a title="获取二维码" class="icon-scan" href="javascript:;"></a>
             </div>
+            <div id="qr"></div>
         </div>
     </div>
+    <div class="scrollbar"></div>
 </div>
 
+    <div class="section">
+        <div class="article">
+    <div class="main">
+        <h1 class="title">sql注入原理分析</h1>
+        <div class="stuff">
+            <span>三月 30, 2019</span>
+            
+
+        </div>
+        <div class="content markdown">
+            <h2 id="SQL-Injection："><a href="#SQL-Injection：" class="headerlink" title="SQL Injection："></a>SQL Injection：</h2><p>就是通过把SQL命令插入到Web表单递交或输入域名或页面请求的查询字符串，最终达到欺骗服务器执行恶意的SQL命令。</p>
+<p>具体来说，它是利用现有应用程序，将（恶意）的SQL命令进行拼接然后注入到后台数据库引擎执行的能力，它可以通过在Web表单中输入（恶意）SQL语句得到一个存在安全漏洞的网站上的数据库，而不是按照设计者意图去执行SQL语句。</p>
+<h2 id="SQL注入的产生："><a href="#SQL注入的产生：" class="headerlink" title="SQL注入的产生："></a>SQL注入的产生：</h2><ul>
+<li>程序无法过滤所有的有风险的上传。</li>
+<li>注入者通过前端与后端的交互和后端对sql数据库的连接，拼接恶意的sql查询语句，使数据库中的明文信息反映到前端的页面中。从而达到获取数据库内容的目的。</li>
+<li>数据库未设置相应的权限。<h2 id="SQL注入的防范"><a href="#SQL注入的防范" class="headerlink" title="SQL注入的防范:"></a>SQL注入的防范:</h2></li>
+<li>永远不要信任用户的输入。对用户的输入进行校验，可以通过正则表达式，或限制长度；对单引号和<br>双”-“进行转换等。</li>
+<li>永远不要使用动态拼装sql，可以使用参数化的sql或者直接使用存储过程进行数据查询存取。</li>
+<li>永远不要使用管理员权限的数据库连接，为每个应用使用单独的权限有限的数据库连接。</li>
+<li>不要把机密信息直接存放，加密或者hash掉密码和敏感的信息。<br>5.应用的异常信息应该给出尽可能少的提示，最好使用自定义的错误信息对原始错误信息进行包装</li>
+<li>sql注入的检测方法一般采取辅助软件或网站平台来检测，软件一般采用sql注入检测工具jsky，网站平台就有亿思网站安全平台检测工具。MDCSOFT SCAN等。采用MDCSOFT-IPS可以有效的防御SQL注入，XSS攻击等。</li>
+</ul>
+
+            <!--[if lt IE 9]><script>document.createElement('audio');</script><![endif]-->
+            <audio id="audio" loop="1" preload="auto" controls="controls" data-autoplay="false">
+                <source type="audio/mpeg" src>
+            </audio>
+            
+                <ul id="audio-list" style="display:none">
+                    
+                        <li title="0" data-url="http://link.hhtjim.com/163/5146554.mp3"></li>
+                    
+                        <li title="1" data-url="http://link.hhtjim.com/qq/001faIUs4M2zna.mp3"></li>
+                    
+                </ul>
+            
+        </div>
+        
+    <div id="gitalk-container" class="comment link" data-ae="false" data-ci data-cs data-r data-o data-a="npmlab" data-d="false">查看评论</div>
+
+
+    </div>
+    
+</div>
+
+
+    </div>
+</div>
 </body>
 <script src="//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js"></script>
 <script src="//lib.baomitu.com/jquery/1.8.3/jquery.min.js"></script>

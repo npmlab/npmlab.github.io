@@ -5,14 +5,13 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
     <meta name="viewport" content="width=device-width, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>sql注入 - Hexo</title>
+    <title>sql注入2 - Hexo</title>
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="google" content="notranslate">
     <meta name="keywords" content="npmlab,"> 
     <meta name="description" content="之前我已经分享了sql注入的原理以及显错注入，现在我再来谈谈另外几种注入的形式。
-sql盲注介绍
-何为盲注？盲注就是在 sql 注入过程中，sql 语句执行的选择后，选择的数据不能回显到前端页面，而,"> 
+sql盲注介绍何为盲注？盲注就是在 sql 注入过程中，sql 语句执行的选择后，选择的数据不能回显到前端页面，而对,"> 
     <meta name="author" content="John Doe"> 
     <link rel="alternative" href="atom.xml" title="Hexo" type="application/atom+xml"> 
     <link rel="icon" href="/img/favicon.png"> 
@@ -37,7 +36,7 @@ sql盲注介绍
     <div class="bar" style="width: 0;"></div>
     <a class="icon-home image-icon" href="javascript:;" data-url="http://yoursite.com"></a>
     <div title="播放/暂停" class="icon-play"></div>
-    <h3 class="subtitle">sql注入</h3>
+    <h3 class="subtitle">sql注入2</h3>
     <div class="social">
         <!--<div class="like-icon">-->
             <!--<a href="javascript:;" class="likeThis active"><span class="icon-like"></span><span class="count">76</span></a>-->
@@ -55,7 +54,7 @@ sql盲注介绍
     <div class="section">
         <div class="article">
     <div class="main">
-        <h1 class="title">sql注入</h1>
+        <h1 class="title">sql注入2</h1>
         <div class="stuff">
             <span>三月 30, 2019</span>
             
@@ -63,8 +62,7 @@ sql盲注介绍
         </div>
         <div class="content markdown">
             <p>之前我已经分享了sql注入的原理以及显错注入，现在我再来谈谈另外几种注入的形式。</p>
-<p><strong>sql盲注介绍</strong></p>
-<p>何为盲注？盲注就是在 sql 注入过程中，sql 语句执行的选择后，选择的数据不能回显到前端页面，而对于攻击者来说也缺少了非常重要的“调试信息”，此时，我们需要利用一些方法进行判断或者尝试，这个过程称之为盲注。</p>
+<h2 id="sql盲注介绍"><a href="#sql盲注介绍" class="headerlink" title="sql盲注介绍"></a>sql盲注介绍</h2><p>何为盲注？盲注就是在 sql 注入过程中，sql 语句执行的选择后，选择的数据不能回显到前端页面，而对于攻击者来说也缺少了非常重要的“调试信息”，此时，我们需要利用一些方法进行判断或者尝试，这个过程称之为盲注。</p>
 <p><em>布尔盲注：</em></p>
 <p>布尔盲注，顾名思义，只有Ture和False，也就是说它只会根据你的注入信息返回Ture跟False，也就是说，不会再显示之前的显错信息了。(我们可以利用逻辑判断进行截取字符串）</p>
 <p><em>时间盲注</em><br>界面返回值只有一种结果ture，无论输出任何值,返回情况都会按ture值来返回正常页面，加入特定的时间函数，通过查看web页面返回时间差来判断注入的语句是否正确。</p>

