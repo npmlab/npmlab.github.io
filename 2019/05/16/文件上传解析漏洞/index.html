@@ -1,0 +1,210 @@
+
+<!DOCTYPE html>
+<html lang="zh-CN" class="loading">
+<head><meta name="generator" content="Hexo 3.8.0">
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title> - Hexo</title>
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="google" content="notranslate">
+    <meta name="keywords" content="npmlab,"> 
+    <meta name="description" content="什么是文件上传漏洞？文件上传漏洞是指由于程序员在对用户文件上传部分的控制不足或者处理缺陷，而导致的用户可以越过其本身权限向服务器上上传可执行的动态脚本文件。这里上传的文件可以是木马，病毒，恶意脚本或,"> 
+    <meta name="author" content="John Doe"> 
+    <link rel="alternative" href="atom.xml" title="Hexo" type="application/atom+xml"> 
+    <link rel="icon" href="/img/favicon.png"> 
+    <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.css">
+    <link rel="stylesheet" href="/css/diaspora.css">
+    <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+    <script>
+         (adsbygoogle = window.adsbygoogle || []).push({
+              google_ad_client: "ca-pub-8691406134231910",
+              enable_page_level_ads: true
+         });
+    </script>
+    <script async custom-element="amp-auto-ads" src="https://cdn.ampproject.org/v0/amp-auto-ads-0.1.js">
+    </script>
+</head>
+</html>
+<body class="loading">
+    <span id="config-title" style="display:none">Hexo</span>
+    <div id="loader"></div>
+    <div id="single">
+    <div id="top" style="display: block;">
+    <div class="bar" style="width: 0;"></div>
+    <a class="icon-home image-icon" href="javascript:;" data-url="http://yoursite.com"></a>
+    <div title="播放/暂停" class="icon-play"></div>
+    <h3 class="subtitle"></h3>
+    <div class="social">
+        <!--<div class="like-icon">-->
+            <!--<a href="javascript:;" class="likeThis active"><span class="icon-like"></span><span class="count">76</span></a>-->
+        <!--</div>-->
+        <div>
+            <div class="share">
+                <a title="获取二维码" class="icon-scan" href="javascript:;"></a>
+            </div>
+            <div id="qr"></div>
+        </div>
+    </div>
+    <div class="scrollbar"></div>
+</div>
+
+    <div class="section">
+        <div class="article">
+    <div class="main">
+        <h1 class="title"></h1>
+        <div class="stuff">
+            <span>五月 16, 2019</span>
+            
+
+        </div>
+        <div class="content markdown">
+            <h3 id="什么是文件上传漏洞？"><a href="#什么是文件上传漏洞？" class="headerlink" title="什么是文件上传漏洞？"></a>什么是文件上传漏洞？</h3><p>文件上传漏洞是指由于程序员在对用户文件上传部分的控制不足或者处理缺陷，而导致的用户可以越过其本身权限向服务器上上传可执行的动态脚本文件。这里上传的文件可以是木马，病毒，恶意脚本或者WebShell等。这种攻击方式是最为直接和有效的，“文件上传”本身没有问题，有问题的是文件上传后，服务器怎么处理、解释文件。如果服务器的处理逻辑做的不够安全，则会导致严重的后果。  </p>
+<h3 id="上传漏洞的成因："><a href="#上传漏洞的成因：" class="headerlink" title="上传漏洞的成因："></a>上传漏洞的成因：</h3><ul>
+<li>文件上传时检查不严。没有进行文件格式检查。</li>
+<li>文件上传后修改文件名时处理不当。一些应用在服务器端进行了完整的黑名单和白名单过滤，在修改已上传文件文件名时却百密一疏，允许用户修改文件后缀。如应用只能上传.doc文件时攻击者可以先将.php文件后缀修改为.doc，成功上传后在修改文件名时将后缀改回.php。</li>
+<li>权限上没有对于上传的文件目录设置不可执行权限<h3 id="文件上传漏洞的检测"><a href="#文件上传漏洞的检测" class="headerlink" title="文件上传漏洞的检测"></a>文件上传漏洞的检测</h3><strong>客户端js校验</strong>（也称前端验证，一般只校验后缀名）<br>一般都是在网页上写一段javascript脚本，校验上传文件的后缀名，有白名单形式也有黑名单形式。<br>判断方式：在浏览加载文件，但还未点击上传按钮时便弹出对话框，内容如：只允许上传.jpg/.jpeg/.png后缀名的文件，而此时并没有发送数据包。前端验证非常不可靠，通过修改数据包后缀名即可绕过，甚至关闭js都可以尝试绕过。</li>
+</ul>
+<p><strong>服务端校验:</strong>  </p>
+<p><li>文件头content-type字段校验（image/gif）</li></p>
+<p><li>文件内容头校验（GIF89a）</li></p>
+<p><li>后缀名黑名单校验</li></p>
+<p><li>后缀名白名单校验</li></p>
+<p><li>自定义正则校验</li><br><strong>WAF设备校验</strong></p>
+<h3 id="前端验证绕过"><a href="#前端验证绕过" class="headerlink" title="前端验证绕过"></a>前端验证绕过</h3><p>上传一个带一句话木马的PHP，会弹出提示只能上传的图片类型。这就是典型的前端检测。<br>我们把这个PHP文件的后缀改为JPG，就会提示上传成功，并开始Burp抓包，然后将JPG的后缀改回为PHP，这样就达到了我们上传PHP木马的目的。<br>接下来就是连接菜刀，进行getshell。  </p>
+<h3 id="Content-Type方式绕过"><a href="#Content-Type方式绕过" class="headerlink" title="Content-Type方式绕过"></a>Content-Type方式绕过</h3><blockquote>
+<p>Content-Type（MediaType），即是Internet Media Type，互联网媒体类型，也叫做MIME类型。在互联网中有成百上千中不同的数据类型，HTTP在传输数据对象时会为他们打上称为MIME的数据格式标签，用于区分数据类型。最初MIME是用于电子邮件系统的，后来HTTP也采用了这一方案。</p>
+</blockquote>
+<blockquote>
+<p>在HTTP协议消息头中，使用Content-Type来表示请求和响应中的媒体类型信息。它用来告诉服务端如何处理请求的数据，以及告诉客户端（一般是浏览器）如何解析响应的数据，比如显示图片，解析并展示html等等。  </p>
+</blockquote>
+<p>#<br>所以同样还是Burp抓包，然后找到Content-Type，将里面的类型修改为你想要上传的文件类型就可以成功绕过检测。</p>
+<h3 id="绕过黑白名单策略："><a href="#绕过黑白名单策略：" class="headerlink" title="绕过黑白名单策略："></a>绕过黑白名单策略：</h3><p><strong>黑名单绕过</strong></p>
+<blockquote>
+<p>通过上传不受欢迎的php扩展来绕过黑名单。例如：pht，phpt，phtml，php3，php4，php5，php6  </p>
+</blockquote>
+<p>#<br><strong>白名单绕过</strong></p>
+<blockquote>
+<p>通过某种类型的技巧来绕过白名单，例如添加空字节注入（shell.php％00.gif），或使用双重扩展来上传文件（shell.jpg.php）。</p>
+</blockquote>
+<p>此外，我们还可以尝试扩展名大小写来绕过，例如：pHp，Php，phP。<br><strong>.htaccess文件绕过</strong></p>
+<blockquote>
+<p>htaccess是超文本访问（Hypertext Access）的缩写，是一个基于Apache的Web服务器使用的配置文件，用于控制它所在的目录以及该目录下的所有子目录。  </p>
+</blockquote>
+<pre><code>AddType application/x-httpd-php .jpg
+</code></pre><p>这个指令代表JPG会被当做PHP来执行，由于图形化界面无法将文件命名为.htaccess，所以使用CMD命令Ren更改后缀。<br>只要把这个.htacess文件上传，之后上传的JPG文件都会被当成PHP解析。</p>
+<h3 id="后缀大小写绕过"><a href="#后缀大小写绕过" class="headerlink" title="后缀大小写绕过"></a>后缀大小写绕过</h3><blockquote>
+<p>我们将做成图片马直接将后缀改成Php，进行上传;<br>让文件的后缀由大小写字母穿插组成。</p>
+</blockquote>
+<p>###　文件后缀（空）绕过</p>
+<blockquote>
+<p>这里相对于前面关卡的代码是少了一个消除两旁空格的函数trim();所以我们我们可以通过在后缀加个空格尝试绕过，黑名单机制中，是不允许上传什么，但如果我们传上去的文件与所限制的稍有不一样，就可以直接绕过黑名单了</p>
+</blockquote>
+<p>我们进行将带有一句话的php文件上传并抓包,在后缀加个空格，上传。</p>
+<h3 id="文件后缀-点-绕过"><a href="#文件后缀-点-绕过" class="headerlink" title="文件后缀(点)绕过"></a>文件后缀(点)绕过</h3><blockquote>
+<p>这里是少了一个删除末尾的点的函数<br>我们还是进行将带有一句话的php文件上传并抓包在后缀加个点，上传，在上传到服务器后，服务器会自动将点去掉，只读取前面有用的后缀；</p>
+</blockquote>
+<h3 id="DATA（Windows文件流绕过）"><a href="#DATA（Windows文件流绕过）" class="headerlink" title="::$DATA（Windows文件流绕过）"></a>::$DATA（Windows文件流绕过）</h3><blockquote>
+<p> ::$DATA（Windows文件流绕过）（这里利用到了NTFS交换数据流(ADS)，ADS是NTFS磁盘格式的一个特性，在NTFS文件系统下，每个文件都存在许多个数据流。通俗理解，就是其他文件可以“寄宿”在某个文件身上，而在资源管理器中却只能看到宿主文件，找不到寄宿问文件。）<br> 例如在cmd命令下运行：echo abcd&gt;&gt;a.txt:b.txt 很明显生成一个a.txt，但是会是空值，因为系统将值写到寄宿文件上去了；</p>
+</blockquote>
+<blockquote>
+<p>然后再运行 echo 123&gt;&gt;a.txt::$DATA，是会在a.txt中输出123的，因为<br>::$DATA相当是个空值，不是一个寄宿文件，所以还是会将文件写入到a.txt中去，不修改文件存储过程；</p>
+</blockquote>
+<blockquote>
+<p>在利用Windows特性，可在后缀加上“ ::$DATA ”绕过。<br>跟之前一样的思路，抓包改包绕过。</p>
+</blockquote>
+<h3 id="构造文件后缀绕过"><a href="#构造文件后缀绕过" class="headerlink" title="构造文件后缀绕过"></a>构造文件后缀绕过</h3><blockquote>
+<p>这关好像用了我们前面关卡的所有过滤，那我们可不可以构造一个文件名后缀111.php. .<br>过滤参数在发现.时会将.去掉，在将空格去掉，最后只剩下111.php. 这样还是可以绕过黑名单机制的，因为111.php.不等于111.php，所以还是能绕过上传；</p>
+</blockquote>
+<h3 id="双写文件后缀绕过"><a href="#双写文件后缀绕过" class="headerlink" title="双写文件后缀绕过"></a>双写文件后缀绕过</h3><blockquote>
+<p>会将符合条件的文件后缀删除，我们只需要将文件后缀进行双写，令他删除后合并就能成功绕过！</p>
+</blockquote>
+
+            <!--[if lt IE 9]><script>document.createElement('audio');</script><![endif]-->
+            <audio id="audio" loop="1" preload="auto" controls="controls" data-autoplay="false">
+                <source type="audio/mpeg" src>
+            </audio>
+            
+                <ul id="audio-list" style="display:none">
+                    
+                        <li title="0" data-url="http://link.hhtjim.com/163/5146554.mp3"></li>
+                    
+                        <li title="1" data-url="http://link.hhtjim.com/qq/001faIUs4M2zna.mp3"></li>
+                    
+                </ul>
+            
+        </div>
+        
+    <div id="gitalk-container" class="comment link" data-ae="false" data-ci data-cs data-r data-o data-a="npmlab" data-d="false">查看评论</div>
+
+
+    </div>
+    
+</div>
+
+
+    </div>
+</div>
+</body>
+<script src="//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js"></script>
+<script src="//lib.baomitu.com/jquery/1.8.3/jquery.min.js"></script>
+<script src="/js/plugin.js"></script>
+<script src="/js/diaspora.js"></script>
+<link rel="stylesheet" href="/photoswipe/photoswipe.css">
+<link rel="stylesheet" href="/photoswipe/default-skin/default-skin.css">
+<script src="/photoswipe/photoswipe.min.js"></script>
+<script src="/photoswipe/photoswipe-ui-default.min.js"></script>
+
+<!-- Root element of PhotoSwipe. Must have class pswp. -->
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+    <!-- Background of PhotoSwipe. 
+         It's a separate element as animating opacity is faster than rgba(). -->
+    <div class="pswp__bg"></div>
+    <!-- Slides wrapper with overflow:hidden. -->
+    <div class="pswp__scroll-wrap">
+        <!-- Container that holds slides. 
+            PhotoSwipe keeps only 3 of them in the DOM to save memory.
+            Don't modify these 3 pswp__item elements, data is added later on. -->
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+        <!-- Default (PhotoSwipeUI_Default) interface on top of sliding area. Can be changed. -->
+        <div class="pswp__ui pswp__ui--hidden">
+            <div class="pswp__top-bar">
+                <!--  Controls are self-explanatory. Order can be changed. -->
+                <div class="pswp__counter"></div>
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+                <button class="pswp__button pswp__button--share" title="Share"></button>
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+                <!-- Preloader demo http://codepen.io/dimsemenov/pen/yyBWoR -->
+                <!-- element will get class pswp__preloader--active when preloader is running -->
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                      <div class="pswp__preloader__cut">
+                        <div class="pswp__preloader__donut"></div>
+                      </div>
+                    </div>
+                </div>
+            </div>
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div> 
+            </div>
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+</html>
